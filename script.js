@@ -1,77 +1,31 @@
 'use strict';
+const container = document.querySelector('.container');
+const authCode = '159981671508983e15899014x66566';
 
-const btn = document.querySelector('.btn-country');
-const countriesContainer = document.querySelector('.countries');
-//CountryListAPI
-// NEW COUNTRIES API URL (use instead of the URL shown in videos):
-// https://restcountries.com/v3.1/name/portugal
+const renderLocation = function (data) {
+  const message = `You are in ${data.city}, ${data.country}`;
 
-// NEW REVERSE GEOCODING API URL (use instead of the URL shown in videos):
-// https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lng}
-
-///////////////////////////////////////
-
-const renderError = function (msg) {
-  countriesContainer.insertAdjacentText('beforeend', msg);
-  //   countriesContainer.style.opacity = 1;
-};
-
-const renderCountry = function (data, className = '') {
-  const html = `
-         <article class="country ${className} ">
-          <img class="country__img" src="${data.flags.png}" />
+  const html = ` 
+        <article class="country">
           <div class="country__data">
-            <h3 class="country__name">${data.name.common}</h3>
-            <h4 class="country__region">${data.region}</h4>
-            <p class="country__row"><span>👫</span>${(+data.population / 1000000).toFixed(1)}</p>
-            <p class="country__row"><span>🗣️</span>${Object.values(data.languages)[0]}</p>
-            <p class="country__row"><span>💰</span>${Object.values(data.currencies)[0].name}</p>
+            <h4 class="country__region">${message}</h4>  
           </div>
-        </article>
-  `;
+        </article>`;
 
-  countriesContainer.insertAdjacentHTML('beforeend', html);
-  //   countriesContainer.style.opacity = 1;
+  container.insertAdjacentHTML('beforeend', html);
 };
 
-const getJSON = function (url, errMsg = 'Something went wrong') {
-  return fetch(url).then(response => {
-    if (!response.ok) throw new Error(`${errMsg} (${response.status})`);
-
-    return response.json();
-  });
-};
-
-//Chaining Promises
-const getCountryData = function (country) {
-  //country 1
-
-  getJSON(`https://restcountries.com/v3.1/name/${country}`, 'Country not found')
+const whereAmI = function (lat, lng) {
+  fetch(`https://geocode.xyz/${lat},${lng}?geoit=json&auth=${authCode}`)
+    .then(response => {
+      return response.json();
+    })
     .then(data => {
-      renderCountry(data[0]);
-      const neighbour = data[0].borders?.[0];
-
-      console.log(neighbour);
-      if (!neighbour) throw new Error('No neighbour found!');
-
-      //country 2
-      return getJSON(
-        `https://restcountries.com/v3.1/alpha/${neighbour}`,
-        'Country not found',
-      );
-    })
-    .then(data => renderCountry(data[0], 'neighbour'))
-    .catch(err => {
-      renderError(`Something went wrong 💥${err.message}.💥 Try again!`);
-    })
-    .finally(() => {
-      countriesContainer.style.opacity = 1;
+      // console.log('FULL DATA:', data);
+      const message = `You are in ${data.city}, ${data.country}`;
+      renderLocation(data);
+      console.log(message);
     });
 };
 
-btn.addEventListener('click', function () {
-  getCountryData('germany');
-  // getCountryData('portugal');
-  // getCountryData('portugal');
-});
-getCountryData('Faroe Islands');
+whereAmI(52.50201, 13.4057);

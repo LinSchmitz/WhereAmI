@@ -16,9 +16,9 @@ const renderLocation = function (data) {
 const whereAmI = function (lat, lng) {
   fetch(`https://geocode.xyz/${lat},${lng}?geoit=json&auth=${authCode}`)
     .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+      if (!response.ok)
+        throw new Error(`Problem with geocoding: ${response.status}`);
+
       return response.json();
     })
     .then(data => {
@@ -44,4 +44,6 @@ const whereAmI = function (lat, lng) {
 };
 
 whereAmI(52.50201, 13.4057);
-// whereAmI('a', 13.4057);
+whereAmI(19.037, 72.873);
+whereAmI(-33.933, 18.474);
+whereAmI('a', 18.474);

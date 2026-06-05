@@ -54,3 +54,20 @@ Take the relevant attribute from the geocoding API result, and plug it into the 
 | 3    | -33.933  | 18.474    |
 
 ---
+
+fetch('URL')
+.then(response => {
+if (!response.ok) {
+throw new Error(`HTTP error! Status: ${response.status}`);
+}
+return response.json();
+})
+.then(data => {
+console.log(data);
+})
+.catch(err => {
+console.error('Something went wrong:', err.message);
+})
+.finally(() => {
+console.log('Request finished');
+});
